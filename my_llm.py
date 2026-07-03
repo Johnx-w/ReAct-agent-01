@@ -4,6 +4,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 from typing import List, Dict, Any
+import re
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
@@ -193,7 +194,30 @@ if __name__ == '__main__':
         
         
 #[3] ReAct智能体编码实现
-# ReActAgent 的核心是一个循环，它不断地“格式化提示词 -> 调用LLM -> 执行动作 -> 整合结果”，直到任务完成或达到最大步数限制。
+# ReActAgent 的核心是一个循环，它不断地”格式化提示词 -> 调用LLM -> 执行动作 -> 整合结果”，直到任务完成或达到最大步数限制。
+
+# ReAct 提示词模板
+REACT_PROMPT_TEMPLATE = """你是一个运行在循环中的智能体，可以思考(Thought)、行动(Action)、观察(Observation)。
+你可以在必要时使用以下工具:
+
+{tools}
+
+你的工作流程:
+1. Thought: 分析当前状态,决定下一步做什么。
+2. Action: 执行一个工具调用,格式为 工具名[输入],或者如果你已经有答案了,输出 Finish[最终答案]。
+3. 你将收到 Observation,那是工具返回的结果。
+
+请始终遵循以下格式:
+Thought: 你的思考过程
+Action: Search[你的查询内容]
+
+当前问题: {question}
+
+之前的交互历史:
+{history}
+
+请开始:"""
+
 class ReActAgent:
     def __init__(self, llm_client: HelloAgentsLLM, tool_executor: ToolExecutor, max_steps: int = 5):
         self.llm_client = llm_client
