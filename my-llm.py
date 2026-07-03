@@ -3,12 +3,10 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from typing import List, Dict
+from typing import List, Dict, Any
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
-# load_dotenv(r"D:\code project\hello-agents\.env")
-# load_dotenv(r"D:\code project\hello-agents\.env.local", override=True)
 
 
 # [1]封装基础 LLM 调用函数
@@ -69,7 +67,7 @@ if __name__ == '__main__':
         
         exampleMessages = [
             {"role": "system", "content": "You are a helpful assistant that writes Python code."},
-            {"role": "user", "content": "告诉我loop engineering的概念和应用"}
+            {"role": "user", "content": "能运行的话,回答'1'就行"}
         ]
         
         print("--- 调用LLM ---")
@@ -131,7 +129,7 @@ def search(query: str) -> str:
 
 
 # 当智能体需要使用多种工具时（例如，除了搜索，还可能需要计算、查询数据库等），我们需要一个统一的管理器来注册和调度这些工具。
-from typing import Dict, Any
+# from typing import Dict, Any
 
 class ToolExecutor:
     """
